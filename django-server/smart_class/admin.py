@@ -15,12 +15,13 @@ from .models import Announcement, Policy, Message
 # Register your models here.
 
 
-class UserinfoAdmin(admin.ModelAdmin):
-    list_display = ('uid', 'open_id', 'password')
-    search_fields = ('uid', 'open_id')
+class UserAuthAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in UserAuth._meta.fields]
+    list_filter = [field.name for field in UserAuth._meta.fields]
+    search_fields = [field.name for field in UserAuth._meta.fields]
 
 
-class UserDetailAdmin(admin.ModelAdmin):
+class UserInfoAdmin(admin.ModelAdmin):
     list_display = [field.name for field in UserInfo._meta.fields]
     list_filter = [field.name for field in UserInfo._meta.fields]
     search_fields = [field.name for field in UserInfo._meta.fields]
@@ -80,8 +81,8 @@ class MessageAdmin(admin.ModelAdmin):
     search_fields = [field.name for field in Message._meta.fields]
 
 
-admin.site.register(UserAuth, UserinfoAdmin)
-admin.site.register(UserInfo, UserDetailAdmin)
+admin.site.register(UserAuth, UserAuthAdmin)
+admin.site.register(UserInfo, UserInfoAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(StuDetail, StuDetailAdmin)
 admin.site.register(TeacherDetail, TeacherDetailAdmin)

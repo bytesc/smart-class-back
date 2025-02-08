@@ -1,2 +1,6 @@
 Django==5.0.4
 django-simpleui==2024.11.15
+pyjwt==2.10.1
+pydantic==2.10.5
+SQLAlchemy==2.0.36
+PyMySQL==1.1.0

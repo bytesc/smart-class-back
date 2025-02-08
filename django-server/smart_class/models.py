@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils import timezone
 
@@ -24,6 +26,8 @@ class UserAuth(models.Model):
                                verbose_name='用户ID')
     open_id = models.CharField(max_length=255, null=True, blank=True, verbose_name='开放ID')
     password = models.CharField(max_length=255, verbose_name='密码')
+    login_time = models.DateTimeField(default=datetime.datetime.utcnow, verbose_name='允许登录时间')
+    retry_count = models.IntegerField(default=0, verbose_name='重试次数')
 
     class Meta:
         db_table = 'user_auth'
@@ -55,7 +59,7 @@ class StuDetail(models.Model):
                                verbose_name='用户ID')
     stu_num = models.CharField(max_length=255, verbose_name='学号')
     major = models.CharField(max_length=255, null=True, blank=True, verbose_name='专业')
-    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True, blank=True, db_column='stu_class',
+    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True, blank=True, db_column='class_name',
                                    verbose_name='班级')
     stu_position = models.CharField(max_length=255, null=True, blank=True, verbose_name='职务')
     notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
