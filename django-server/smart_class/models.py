@@ -5,9 +5,10 @@ from django.utils import timezone
 class UserInfo(models.Model):
     uid = models.CharField(max_length=32, primary_key=True, verbose_name='用户ID')
     username = models.CharField(max_length=255, verbose_name='用户名')
-    user_gender = models.CharField(max_length=255, null=True, blank=True, verbose_name='性别')
-    user_birthday = models.DateField(null=True, blank=True, verbose_name='生日')
-    user_notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
+    gender = models.CharField(max_length=255, null=True, blank=True, verbose_name='性别')
+    email = models.EmailField(max_length=255, null=True, blank=True, verbose_name='邮箱')
+    birthday = models.DateField(null=True, blank=True, verbose_name='生日')
+    notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
 
     class Meta:
         db_table = 'user_info'
@@ -35,10 +36,10 @@ class UserAuth(models.Model):
 
 class Class(models.Model):
     class_name = models.CharField(max_length=255, primary_key=True, verbose_name='班级名称')
-    class_teacher_id = models.ForeignKey(UserInfo, on_delete=models.SET_NULL, null=True, blank=True,
-                                         related_name='teacher_classes', db_column='class_teacher_id',
-                                         verbose_name='班主任')
-    class_notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
+    teacher_uid = models.ForeignKey(UserInfo, on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='teacher_classes', db_column='teacher_uid',
+                                    verbose_name='班主任')
+    notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
 
     class Meta:
         db_table = 'class'
@@ -53,11 +54,11 @@ class StuDetail(models.Model):
     uid = models.OneToOneField(UserInfo, on_delete=models.CASCADE, primary_key=True, db_column='uid',
                                verbose_name='用户ID')
     stu_num = models.CharField(max_length=255, verbose_name='学号')
-    stu_major = models.CharField(max_length=255, null=True, blank=True, verbose_name='专业')
-    stu_notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
-    stu_class = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True, blank=True, db_column='stu_class',
-                                  verbose_name='班级')
-    stu_leader = models.CharField(max_length=255, null=True, blank=True, verbose_name='职务')
+    major = models.CharField(max_length=255, null=True, blank=True, verbose_name='专业')
+    class_name = models.ForeignKey(Class, on_delete=models.SET_NULL, null=True, blank=True, db_column='stu_class',
+                                   verbose_name='班级')
+    stu_position = models.CharField(max_length=255, null=True, blank=True, verbose_name='职务')
+    notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
 
     class Meta:
         db_table = 'stu_detail'
@@ -72,7 +73,7 @@ class TeacherDetail(models.Model):
     uid = models.OneToOneField(UserInfo, on_delete=models.CASCADE, primary_key=True, db_column='uid',
                                verbose_name='用户ID')
     teacher_num = models.CharField(max_length=255, verbose_name='教师编号')
-    teacher_notes = models.CharField(max_length=255, verbose_name='教师备注', null=True, blank=True)
+    notes = models.CharField(max_length=255, verbose_name='教师备注', null=True, blank=True)
 
     class Meta:
         db_table = 'teacher_detail'
@@ -84,9 +85,9 @@ class TeacherDetail(models.Model):
 
 
 class LessonInfo(models.Model):
-    lesson_id = models.CharField(max_length=255, verbose_name='课程编号', primary_key=True, db_column='lesson_id')
+    lesson_num = models.CharField(max_length=255, verbose_name='课程编号', primary_key=True, db_column='lesson_id')
     lesson_name = models.CharField(max_length=255, verbose_name='课程名称')
-    lesson_notes = models.CharField(max_length=255, verbose_name='课程备注', null=True, blank=True)
+    notes = models.CharField(max_length=255, verbose_name='课程备注', null=True, blank=True)
 
     # prerequisites = models.ManyToManyField(
     #     'self',
@@ -102,9 +103,10 @@ class LessonInfo(models.Model):
         verbose_name_plural = '07-课程列表'
 
     def __str__(self):
-        return str(self.lesson_id) + " - " + str(self.lesson_name)
+        return str(self.lesson_num) + " - " + str(self.lesson_name)
 
 
+# auto id
 class LessonPrerequisite(models.Model):
     from_lesson = models.ForeignKey(LessonInfo, on_delete=models.CASCADE, db_column='from_lesson',
                                     related_name='from_lessons', verbose_name='课程')
@@ -136,11 +138,12 @@ class Semester(models.Model):
         return self.semester_name
 
 
+# auto id
 class StuGrade(models.Model):
     uid = models.ForeignKey(UserInfo, on_delete=models.CASCADE,
                             db_column='uid', verbose_name='用户ID')
-    lesson_id = models.ForeignKey(LessonInfo, on_delete=models.CASCADE,
-                                  db_column='lesson_id', verbose_name='课程编号')
+    lesson_num = models.ForeignKey(LessonInfo, on_delete=models.CASCADE,
+                                  db_column='lesson_num', verbose_name='课程编号')
     grade = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='成绩')
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE,
                                  db_column='semester', verbose_name='学期')
@@ -150,10 +153,10 @@ class StuGrade(models.Model):
         db_table = 'stu_grade'
         verbose_name = '学生成绩'
         verbose_name_plural = '09-学生成绩列表'
-        unique_together = ('uid', 'lesson_id', 'semester')
+        unique_together = ('uid', 'lesson_num', 'semester')
 
     def __str__(self):
-        return f"{self.uid} - {self.lesson_id} - {self.semester}"
+        return f"{self.uid} - {self.lesson_num} - {self.semester}"
 
 
 class Announcement(models.Model):
