@@ -3,13 +3,14 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib import admin
 
-admin.site.site_header = 'XXX后台管理'  # 设置header
-admin.site.site_title = 'XXX管理后台'   # 设置title
-admin.site.index_title = 'XXX管理后台'
+admin.site.site_header = '智慧班级后台管理'  # 设置header
+admin.site.site_title = '智慧班级后台管理'   # 设置title
+admin.site.index_title = '智慧班级后台管理'
 
 
-from .models import Userinfo, UserDetail, Class, StuDetail, TeacherDetail
-from .models import LessonInfo, StuGrade, ClassLeader, LessonPrerequisite
+from .models import UserAuth, UserInfo, Class, StuDetail, TeacherDetail
+from .models import LessonInfo, StuGrade, LessonPrerequisite, Semester
+from .models import Announcement, Policy
 
 # Register your models here.
 
@@ -20,9 +21,9 @@ class UserinfoAdmin(admin.ModelAdmin):
 
 
 class UserDetailAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in UserDetail._meta.fields]
-    list_filter = [field.name for field in UserDetail._meta.fields]
-    search_fields = [field.name for field in UserDetail._meta.fields]
+    list_display = [field.name for field in UserInfo._meta.fields]
+    list_filter = [field.name for field in UserInfo._meta.fields]
+    search_fields = [field.name for field in UserInfo._meta.fields]
 
 
 class ClassAdmin(admin.ModelAdmin):
@@ -55,28 +56,33 @@ class StuGradeAdmin(admin.ModelAdmin):
     search_fields = [field.name for field in StuGrade._meta.fields]
 
 
-class ClassLeaderAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in ClassLeader._meta.fields]
-    list_filter = [field.name for field in ClassLeader._meta.fields]
-    search_fields = [field.name for field in ClassLeader._meta.fields]
-
-
 class LessonPrerequisiteAdmin(admin.ModelAdmin):
     list_display = [field.name for field in LessonPrerequisite._meta.fields]
     list_filter = [field.name for field in LessonPrerequisite._meta.fields]
     search_fields = [field.name for field in LessonPrerequisite._meta.fields]
 
 
-admin.site.register(Userinfo, UserinfoAdmin)
-admin.site.register(UserDetail, UserDetailAdmin)
+class AnnouncementAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Announcement._meta.fields]
+    list_filter = [field.name for field in Announcement._meta.fields]
+    search_fields = [field.name for field in Announcement._meta.fields]
+
+
+class PolicyPrerequisiteAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Policy._meta.fields]
+    list_filter = [field.name for field in Policy._meta.fields]
+    search_fields = [field.name for field in Policy._meta.fields]
+
+
+admin.site.register(UserAuth, UserinfoAdmin)
+admin.site.register(UserInfo, UserDetailAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(StuDetail, StuDetailAdmin)
 admin.site.register(TeacherDetail, TeacherDetailAdmin)
 admin.site.register(LessonInfo, LessonInfoAdmin)
 admin.site.register(StuGrade, StuGradeAdmin)
-admin.site.register(ClassLeader, ClassLeaderAdmin)
 admin.site.register(LessonPrerequisite, LessonPrerequisiteAdmin)
-
-
-
+admin.site.register(Semester)
+admin.site.register(Announcement, AnnouncementAdmin)
+admin.site.register(Policy, PolicyPrerequisiteAdmin)
 
