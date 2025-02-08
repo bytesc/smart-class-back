@@ -10,7 +10,7 @@ admin.site.index_title = '智慧班级后台管理'
 
 from .models import UserAuth, UserInfo, Class, StuDetail, TeacherDetail
 from .models import LessonInfo, StuGrade, LessonPrerequisite, Semester
-from .models import Announcement, Policy
+from .models import Announcement, Policy, Message
 
 # Register your models here.
 
@@ -74,6 +74,12 @@ class PolicyPrerequisiteAdmin(admin.ModelAdmin):
     search_fields = [field.name for field in Policy._meta.fields]
 
 
+class MessageAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Message._meta.fields]
+    list_filter = [field.name for field in Message._meta.fields]
+    search_fields = [field.name for field in Message._meta.fields]
+
+
 admin.site.register(UserAuth, UserinfoAdmin)
 admin.site.register(UserInfo, UserDetailAdmin)
 admin.site.register(Class, ClassAdmin)
@@ -85,4 +91,4 @@ admin.site.register(LessonPrerequisite, LessonPrerequisiteAdmin)
 admin.site.register(Semester)
 admin.site.register(Announcement, AnnouncementAdmin)
 admin.site.register(Policy, PolicyPrerequisiteAdmin)
-
+admin.site.register(Message, MessageAdmin)
