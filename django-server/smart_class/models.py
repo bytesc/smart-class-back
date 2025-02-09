@@ -26,7 +26,7 @@ class UserAuth(models.Model):
                                verbose_name='用户ID')
     open_id = models.CharField(max_length=255, null=True, blank=True, verbose_name='开放ID')
     password = models.CharField(max_length=255, verbose_name='密码')
-    login_time = models.DateTimeField(default=datetime.datetime.utcnow, verbose_name='允许登录时间')
+    login_time = models.DateTimeField(default=datetime.datetime.utcnow, verbose_name='允许登录时间(utc)')
     retry_count = models.IntegerField(default=0, verbose_name='重试次数')
 
     class Meta:
