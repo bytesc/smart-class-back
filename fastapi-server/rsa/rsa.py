@@ -34,4 +34,3 @@ with open(public_key_path, 'wb') as f:
     f.write(pem_public_key)
 
 
-
