@@ -6,6 +6,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from .api_model.response_model import ApiResponse
 from .utils.rsa.keys import PRIVATE_KEY
+from .utils.rsa.token import create_access_token
 
 
 class UserRegisterModel(BaseModel):
@@ -13,6 +14,8 @@ class UserRegisterModel(BaseModel):
     username: str = Field(..., min_length=1, max_length=50, description="姓名")
     email: Optional[str] = Field(default="", max_length=200, description="邮箱")
     password: str = Field(..., min_length=6, max_length=50, description="密码")
+
+
 async def registerApi(request: Request, data: UserRegisterModel, engine):
     conn = engine.connect()
     result_auth = conn.execute(sqlalchemy.text("SELECT * FROM user_auth WHERE uid = :uid"),
@@ -60,6 +63,8 @@ async def registerApi(request: Request, data: UserRegisterModel, engine):
 class UserLoginModel(BaseModel):
     uid: str = Field(..., min_length=3, max_length=50, description="手机号")
     password: str = Field(..., min_length=6, description="密码")
+
+
 async def loginApi(request: Request, data: UserLoginModel, engine):
     conn = engine.connect()
     try:
@@ -100,12 +105,8 @@ async def loginApi(request: Request, data: UserLoginModel, engine):
             conn.commit()
             return ApiResponse(code=400, msg="密码错误")
 
-        expiration_time = datetime.utcnow() + timedelta(hours=24)
-        token = jwt.encode(
-            {"uid": data.uid, "exp": expiration_time},
-            PRIVATE_KEY,
-            algorithm="RS256"
-        )
+        token = create_access_token(token_payload={"uid": data.uid},
+                                    expiration_delta=timedelta(hours=24))
         return ApiResponse(code=200,
                            data={
                                "token": token,

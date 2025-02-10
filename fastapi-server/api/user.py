@@ -4,7 +4,7 @@ from .api_model.response_model import ApiResponse
 
 
 async def userInfoApi(request: Request, uid: int, engine):
-    print(request.state.user)
+    # print(request.state.user)
     conn = engine.connect()
     try:
         result = conn.execute(sqlalchemy.text("""

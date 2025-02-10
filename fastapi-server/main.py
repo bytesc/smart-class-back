@@ -1,24 +1,16 @@
 import sqlalchemy
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 import uvicorn
 from api.utils.get_config import config_data
 
-from api.api_model.response_model import ApiResponse
-
 from fastapi import Request
 
-from starlette.responses import JSONResponse
-
-import jwt
-
 from api.api_model.response_model import ApiResponse
-from api.utils.rsa.keys import PUBLIC_KEY
-
 
 app = FastAPI()
 
 
-from api.midware import authMidware
+from api.midware.midware import authMidware
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     response = await authMidware(request, call_next, engine)
