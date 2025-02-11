@@ -42,5 +42,12 @@ async def get_user_info(request: Request, uid: str):
     return response
 
 
+from api.my_class import get_class_list_api
+@app.post("/api/my-class/{class_name}")
+async def get_user_info(request: Request, class_name: str):
+    response = await get_class_list_api(request, class_name, engine)
+    return response
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=config_data['server_port'])
