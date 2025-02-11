@@ -4,9 +4,13 @@ from fastapi import Request
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime, timedelta
+
+from starlette.responses import JSONResponse
+
 from .api_model.response_model import ApiResponse
 from .utils.rsa.keys import PRIVATE_KEY
 from .utils.rsa.token import create_access_token
+from .user import get_user_info
 
 
 class UserRegisterModel(BaseModel):
@@ -16,11 +20,17 @@ class UserRegisterModel(BaseModel):
     password: str = Field(..., min_length=6, max_length=50, description="密码")
 
 
-async def registerApi(request: Request, data: UserRegisterModel, engine):
+async def register_api(request: Request, data: UserRegisterModel, engine):
     conn = engine.connect()
-    result_auth = conn.execute(sqlalchemy.text("SELECT * FROM user_auth WHERE uid = :uid"),
+    result_auth = conn.execute(sqlalchemy.text("""
+                                    SELECT uid,open_id,password,login_time,retry_count 
+                                    FROM user_auth WHERE uid = :uid
+                                    """),
                                {"uid": data.uid})
-    result_info = conn.execute(sqlalchemy.text("SELECT * FROM user_info WHERE uid = :uid"),
+    result_info = conn.execute(sqlalchemy.text("""
+                                    SELECT uid,username,gender,email,birthday,notes
+                                     FROM user_info WHERE uid = :uid
+                                    """),
                                {"uid": data.uid})
     conn.commit()
     if result_info.fetchone() is not None or result_auth.fetchone() is not None:
@@ -65,12 +75,18 @@ class UserLoginModel(BaseModel):
     password: str = Field(..., min_length=6, description="密码")
 
 
-async def loginApi(request: Request, data: UserLoginModel, engine):
+async def login_api(request: Request, data: UserLoginModel, engine):
     conn = engine.connect()
     try:
-        result_auth = conn.execute(sqlalchemy.text("SELECT * FROM user_auth WHERE uid = :uid"),
+        result_auth = conn.execute(sqlalchemy.text("""
+                                        SELECT uid,open_id,password,login_time,retry_count 
+                                        FROM user_auth WHERE uid = :uid
+                                        """),
                                    {"uid": data.uid})
-        result_info = conn.execute(sqlalchemy.text("SELECT * FROM user_info WHERE uid = :uid"),
+        result_info = conn.execute(sqlalchemy.text("""
+                                        SELECT uid,username,gender,email,birthday,notes
+                                         FROM user_info WHERE uid = :uid
+                                        """),
                                    {"uid": data.uid})
         conn.commit()
         user_auth = result_auth.fetchone()
@@ -107,14 +123,12 @@ async def loginApi(request: Request, data: UserLoginModel, engine):
 
         token = create_access_token(token_payload={"uid": data.uid},
                                     expiration_delta=timedelta(hours=24))
-        return ApiResponse(code=200,
-                           data={
-                               "token": token,
-                               "uid": user_info[0],  # uid
-                               "username": user_info[1],  # username
-                               "email": user_info[3],  # email,
-                           },
-                           msg="登录成功")
+        response_api = await get_user_info(data.uid, engine)
+        response_api.msg = "登录成功"
+        response = JSONResponse(content=response_api.dict())
+        response.headers['new-token'] = token
+        return response
+
     except Exception as e:
         print(e)
         return ApiResponse(code=500, msg="登录错误")

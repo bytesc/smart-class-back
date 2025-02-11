@@ -21,7 +21,7 @@ async def authMidware(request: Request, call_next, engine):
     if not token or token == "":
         return JSONResponse(
             status_code=200,
-            content=ApiResponse(code=400, msg="未携带token").dict()
+            content=ApiResponse(code=410, msg="未携带token").dict()
         )
     try:
         payload = decode_access_token(token)
@@ -34,19 +34,19 @@ async def authMidware(request: Request, call_next, engine):
     except jwt.ExpiredSignatureError:
         return JSONResponse(
             status_code=200,
-            content=ApiResponse(code=400, msg="token过期").dict()
+            content=ApiResponse(code=410, msg="token过期").dict()
         )
     except jwt.InvalidTokenError as e:
         print(e)
         return JSONResponse(
             status_code=200,
-            content=ApiResponse(code=400, msg="token无效").dict()
+            content=ApiResponse(code=410, msg="token无效").dict()
         )
     except Exception as e:
         print(e)
         return JSONResponse(
             status_code=200,
-            content=ApiResponse(code=400, msg="token处理错误").dict()
+            content=ApiResponse(code=500, msg="token处理错误").dict()
         )
     response = await call_next(request)
     if new_token:

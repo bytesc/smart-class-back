@@ -21,23 +21,24 @@ DATABASE_URL = config_data['mysql']
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
 
-from api.login import UserRegisterModel, registerApi
+from api.login import UserRegisterModel, register_api
 @app.post("/api/register", response_model=ApiResponse)
 async def register(request: Request, data: UserRegisterModel):
-    response = await registerApi(request, data, engine)
+    response = await register_api(request, data, engine)
     return response
 
 
-from api.login import UserLoginModel, loginApi
+from api.login import UserLoginModel, login_api
 @app.post("/api/login/")
 async def login(request: Request, data: UserLoginModel):
-    response = await loginApi(request, data, engine)
+    response = await login_api(request, data, engine)
     return response
 
-from api.user import userInfoApi
+
+from api.user import user_info_api
 @app.post("/api/userinfo/{uid}")
-async def get_user_info(request: Request, uid: int):
-    response = await userInfoApi(request, uid, engine)
+async def get_user_info(request: Request, uid: str):
+    response = await user_info_api(request, uid, engine)
     return response
 
 
