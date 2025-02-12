@@ -24,6 +24,7 @@ class UserAuthAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in UserAuth._meta.fields]
     list_filter = [field.name for field in UserAuth._meta.fields]
     search_fields = [field.name for field in UserAuth._meta.fields]
+    autocomplete_fields = ['uid']
 
 
 class UserInfoAdmin(ImportExportModelAdmin):
@@ -36,18 +37,21 @@ class ClassAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in Class._meta.fields]
     list_filter = [field.name for field in Class._meta.fields]
     search_fields = [field.name for field in Class._meta.fields]
+    autocomplete_fields = ['teacher_uid']
 
 
 class StuDetailAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in StuDetail._meta.fields]
     list_filter = [field.name for field in StuDetail._meta.fields]
     search_fields = [field.name for field in StuDetail._meta.fields]
+    autocomplete_fields = ['uid']
 
 
 class TeacherDetailAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in TeacherDetail._meta.fields]
     list_filter = [field.name for field in TeacherDetail._meta.fields]
     search_fields = [field.name for field in TeacherDetail._meta.fields]
+    autocomplete_fields = ['uid']
 
 
 class LessonInfoAdmin(ImportExportModelAdmin):
@@ -60,18 +64,21 @@ class StuGradeAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in StuGrade._meta.fields]
     list_filter = [field.name for field in StuGrade._meta.fields]
     search_fields = [field.name for field in StuGrade._meta.fields]
+    autocomplete_fields = ['uid', "lesson_num"]
 
 
 class LessonPrerequisiteAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in LessonPrerequisite._meta.fields]
     list_filter = [field.name for field in LessonPrerequisite._meta.fields]
     search_fields = [field.name for field in LessonPrerequisite._meta.fields]
+    autocomplete_fields = ['from_lesson', "to_lesson"]
 
 
 class AnnouncementAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in Announcement._meta.fields]
     list_filter = [field.name for field in Announcement._meta.fields]
     search_fields = [field.name for field in Announcement._meta.fields]
+    autocomplete_fields = ['publisher', "class_name"]
 
 
 class PolicyAdmin(ImportExportModelAdmin):
@@ -84,6 +91,7 @@ class MessageAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in Message._meta.fields]
     list_filter = [field.name for field in Message._meta.fields]
     search_fields = [field.name for field in Message._meta.fields]
+    autocomplete_fields = ['receiver', "sender"]
 
 
 admin.site.register(UserAuth, UserAuthAdmin)
