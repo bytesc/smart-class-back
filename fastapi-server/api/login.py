@@ -121,6 +121,13 @@ async def login_api(request: Request, data: UserLoginModel, engine):
             conn.commit()
             return ApiResponse(code=400, msg="密码错误")
 
+        conn.execute(sqlalchemy.text("""
+                UPDATE user_auth SET retry_count = 0 WHERE uid = :uid
+            """), {
+            "retry_count": user_auth[4] + 1,  # retry_count
+            "uid": data.uid
+        })
+        conn.commit()
         token = create_access_token(token_payload={"uid": data.uid},
                                     expiration_delta=timedelta(hours=24))
         response_api = await get_user_info(data.uid, engine)
