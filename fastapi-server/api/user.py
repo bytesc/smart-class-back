@@ -23,7 +23,6 @@ def check_user(uid: str, engine):
     return userinfo
 
 
-
 async def get_user_info(uid: str, engine):
     conn = engine.connect()
     try:
@@ -93,7 +92,7 @@ async def get_user_info(uid: str, engine):
         conn.close()
 
 
-async def user_info_api(request: Request, uid: str, engine):
+async def get_user_info_api(request: Request, uid: str, engine):
     # print(request.state.user)
     token_uid = request.state.user.get("uid")
     if not token_uid or token_uid != uid:

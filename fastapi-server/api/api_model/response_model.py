@@ -7,4 +7,4 @@ class ApiResponse(BaseModel):
     data: dict = Field(default={}, description="数据内容")
     msg: str = Field(default="", description="消息")
     hidden_msg: str = Field(default="", description="后台消息")
-    token: str = Field(default="", description="Token")
+    # token: str = Field(default="", description="Token")

@@ -56,8 +56,8 @@ async def get_class_list(class_name: str, engine):
             "class_name": class_name
         })
         conn.commit()
-        class_list = stu_list_result.fetchall()
-        print(class_list, class_name)
+        stu_list = stu_list_result.fetchall()
+        print(stu_list, class_name)
 
         teacher_result = conn.execute(sqlalchemy.text("""
                             SELECT user_info.uid, user_info.username, teacher_detail.teacher_num
@@ -68,7 +68,7 @@ async def get_class_list(class_name: str, engine):
         })
         conn.commit()
         class_teacher = teacher_result.fetchone()
-        if class_list:
+        if stu_list:
             response.data = {
                 "class_name": class_name,
                 "class_teacher_uid": class_teacher[0],
@@ -80,7 +80,7 @@ async def get_class_list(class_name: str, engine):
                         "stu_num": student[1],
                         "stu_position": student[3],
                         "username": student[4]
-                    } for student in class_list
+                    } for student in stu_list
                 ]
             }
         return response
