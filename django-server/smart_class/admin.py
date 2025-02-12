@@ -2,6 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
 
 admin.site.site_header = '智慧班级后台管理'  # 设置header
 admin.site.site_title = '智慧班级后台管理'   # 设置title
@@ -15,67 +16,71 @@ from .models import Announcement, Policy, Message
 # Register your models here.
 
 
-class UserAuthAdmin(admin.ModelAdmin):
+# class UserAuthAdmin(admin.ModelAdmin):
+#     list_display = [field.name for field in UserAuth._meta.fields]
+#     list_filter = [field.name for field in UserAuth._meta.fields]
+#     search_fields = [field.name for field in UserAuth._meta.fields]
+class UserAuthAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in UserAuth._meta.fields]
     list_filter = [field.name for field in UserAuth._meta.fields]
     search_fields = [field.name for field in UserAuth._meta.fields]
 
 
-class UserInfoAdmin(admin.ModelAdmin):
+class UserInfoAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in UserInfo._meta.fields]
     list_filter = [field.name for field in UserInfo._meta.fields]
     search_fields = [field.name for field in UserInfo._meta.fields]
 
 
-class ClassAdmin(admin.ModelAdmin):
+class ClassAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in Class._meta.fields]
     list_filter = [field.name for field in Class._meta.fields]
     search_fields = [field.name for field in Class._meta.fields]
 
 
-class StuDetailAdmin(admin.ModelAdmin):
+class StuDetailAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in StuDetail._meta.fields]
     list_filter = [field.name for field in StuDetail._meta.fields]
     search_fields = [field.name for field in StuDetail._meta.fields]
 
 
-class TeacherDetailAdmin(admin.ModelAdmin):
+class TeacherDetailAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in TeacherDetail._meta.fields]
     list_filter = [field.name for field in TeacherDetail._meta.fields]
     search_fields = [field.name for field in TeacherDetail._meta.fields]
 
 
-class LessonInfoAdmin(admin.ModelAdmin):
+class LessonInfoAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in LessonInfo._meta.fields]
     list_filter = [field.name for field in LessonInfo._meta.fields]
     search_fields = [field.name for field in LessonInfo._meta.fields]
 
 
-class StuGradeAdmin(admin.ModelAdmin):
+class StuGradeAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in StuGrade._meta.fields]
     list_filter = [field.name for field in StuGrade._meta.fields]
     search_fields = [field.name for field in StuGrade._meta.fields]
 
 
-class LessonPrerequisiteAdmin(admin.ModelAdmin):
+class LessonPrerequisiteAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in LessonPrerequisite._meta.fields]
     list_filter = [field.name for field in LessonPrerequisite._meta.fields]
     search_fields = [field.name for field in LessonPrerequisite._meta.fields]
 
 
-class AnnouncementAdmin(admin.ModelAdmin):
+class AnnouncementAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in Announcement._meta.fields]
     list_filter = [field.name for field in Announcement._meta.fields]
     search_fields = [field.name for field in Announcement._meta.fields]
 
 
-class PolicyPrerequisiteAdmin(admin.ModelAdmin):
+class PolicyAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in Policy._meta.fields]
     list_filter = [field.name for field in Policy._meta.fields]
     search_fields = [field.name for field in Policy._meta.fields]
 
 
-class MessageAdmin(admin.ModelAdmin):
+class MessageAdmin(ImportExportModelAdmin):
     list_display = [field.name for field in Message._meta.fields]
     list_filter = [field.name for field in Message._meta.fields]
     search_fields = [field.name for field in Message._meta.fields]
@@ -91,5 +96,5 @@ admin.site.register(StuGrade, StuGradeAdmin)
 admin.site.register(LessonPrerequisite, LessonPrerequisiteAdmin)
 admin.site.register(Semester)
 admin.site.register(Announcement, AnnouncementAdmin)
-admin.site.register(Policy, PolicyPrerequisiteAdmin)
+admin.site.register(Policy, PolicyAdmin)
 admin.site.register(Message, MessageAdmin)

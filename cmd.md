@@ -1,4 +1,7 @@
-
+```bash
+pip install django-import-export
+pip install django-simpleui -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
 
 ```bash
 django-admin startproject mysite django-server
@@ -13,6 +16,7 @@ python manage.py runserver 0.0.0.0:8080
 
 INSTALLED_APPS = [
     'simpleui',
+    'import_export',
     "smart_class.apps.SmartClassConfig",
 ]
 
@@ -40,6 +44,8 @@ USE_TZ = False
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
 SIMPLEUI_LOGO = '/static/image/logo.png'
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 ```
 
 
