@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field
 from .api_model.response_model import ApiResponse
 
 
-
 def check_user(uid: str, engine):
     conn = engine.connect()
 
@@ -16,7 +15,7 @@ def check_user(uid: str, engine):
                     FROM user_info
                     WHERE uid = :uid
                 """), {
-            "uid": uid
+        "uid": uid
     })
     conn.commit()
     userinfo = result.fetchone()
@@ -69,20 +68,20 @@ async def get_user_info(uid: str, engine):
         teacher_info = result.fetchone()
         if teacher_info:
             response.data = {
-                                   "uid": userinfo[0],
-                                   "username": userinfo[1],
-                                   "email": userinfo[2],
-                                   "teacher_info": {
-                                       "teacher_num": teacher_info[1],
-                                   }
-                               }
+                "uid": userinfo[0],
+                "username": userinfo[1],
+                "email": userinfo[2],
+                "teacher_info": {
+                    "teacher_num": teacher_info[1],
+                }
+            }
             return response
 
-        response.data={
-                               "uid": userinfo[0],
-                               "username": userinfo[1],
-                               "email": userinfo[2],
-                           }
+        response.data = {
+            "uid": userinfo[0],
+            "username": userinfo[1],
+            "email": userinfo[2],
+        }
         return response
 
     except Exception as e:
@@ -100,6 +99,3 @@ async def get_user_info_api(request: Request, uid: str, engine):
         print(token_uid)
     response = await get_user_info(uid, engine)
     return response
-
-
-
