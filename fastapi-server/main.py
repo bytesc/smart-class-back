@@ -37,24 +37,30 @@ async def login(request: Request, data: UserLoginModel):
 
 from api.user import get_user_info_api
 @app.post("/api/userinfo/{uid}")
-async def get_user_info(request: Request, uid: str):
+async def get_userinfo(request: Request, uid: str):
     response = await get_user_info_api(request, uid, engine)
     return response
 
 
 from api.my_class import get_class_list_api
 @app.post("/api/my-class/{class_name}")
-async def get_user_info(request: Request, class_name: str):
+async def get_my_class(request: Request, class_name: str):
     response = await get_class_list_api(request, class_name, engine)
     return response
 
 
 from api.teacher import get_teacher_class_api
 @app.post("/api/teacher-class/{uid}")
-async def get_user_info(request: Request, uid: str):
+async def get_teacher_class(request: Request, uid: str):
     response = await get_teacher_class_api(request, uid, engine)
     return response
 
+
+from api.my_grade import get_my_grade_list_api
+@app.post("/api/stu-grade/{uid}")
+async def get_my_grade_list(request: Request, uid: str):
+    response = await get_my_grade_list_api(request, uid, engine)
+    return response
 
 
 if __name__ == "__main__":

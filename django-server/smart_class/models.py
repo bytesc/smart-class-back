@@ -89,7 +89,7 @@ class TeacherDetail(models.Model):
 
 
 class LessonInfo(models.Model):
-    lesson_num = models.CharField(max_length=255, verbose_name='课程编号', primary_key=True, db_column='lesson_id')
+    lesson_num = models.CharField(max_length=255, verbose_name='课程编号', primary_key=True, db_column='lesson_num')
     lesson_name = models.CharField(max_length=255, verbose_name='课程名称')
     notes = models.CharField(max_length=255, verbose_name='课程备注', null=True, blank=True)
 

@@ -57,7 +57,7 @@ async def get_class_list(class_name: str, engine):
         })
         conn.commit()
         stu_list = stu_list_result.fetchall()
-        print(stu_list, class_name)
+        # print(stu_list, class_name)
 
         teacher_result = conn.execute(sqlalchemy.text("""
                             SELECT user_info.uid, user_info.username, teacher_detail.teacher_num
