@@ -44,11 +44,13 @@ async def get_teacher_class_api(request: Request, uid: str, engine):
     token_uid = request.state.user.get("uid")
 
     if not token_uid or token_uid != uid:
-        ApiResponse(code=400, msg=f'{token_uid} 无权限查看 {uid} ')
         print(token_uid)
+        return ApiResponse(code=400, msg=f'{token_uid} 无权限查看 {uid} ')
+
     teacher_auth = check_user_is_teacher(uid, engine)
     if not teacher_auth:
-        ApiResponse(code=400, msg=f'{token_uid} 无教师权限')
         print(teacher_auth)
+        return ApiResponse(code=400, msg=f'{token_uid} 无教师权限')
+
     response = await get_teacher_class(uid, engine)
     return response

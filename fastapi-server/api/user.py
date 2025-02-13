@@ -91,11 +91,13 @@ async def get_user_info(uid: str, engine):
         conn.close()
 
 
+from .teacher import check_user_is_teacher
 async def get_user_info_api(request: Request, uid: str, engine):
     # print(request.state.user)
     token_uid = request.state.user.get("uid")
-    if not token_uid or token_uid != uid:
-        ApiResponse(code=400, msg=f'{token_uid} 无权限查看 {uid} ')
+    teacher = check_user_is_teacher(token_uid, engine)
+    if not token_uid or (token_uid != uid and not teacher):
         print(token_uid)
+        return ApiResponse(code=400, msg=f'{token_uid} 无权限查看 {uid} ')
     response = await get_user_info(uid, engine)
     return response

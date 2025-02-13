@@ -20,7 +20,7 @@ def check_class(class_name: str, engine):
     return class_info
 
 
-def check_stu_in_class(class_name: str, uid: str, engine):
+def check_stu_in_class(uid: str,class_name: str, engine):
     conn = engine.connect()
     result = conn.execute(sqlalchemy.text("""
                     SELECT *
@@ -92,12 +92,16 @@ async def get_class_list(class_name: str, engine):
         conn.close()
 
 
+from .teacher import check_user_is_teacher
 async def get_class_list_api(request: Request, class_name: str, engine):
     # print(request.state.user)
     token_uid = request.state.user.get("uid")
+    print(token_uid,class_name)
     checked_class = check_stu_in_class(token_uid,class_name,engine)
-    if not token_uid or not checked_class:
-        ApiResponse(code=400, msg=f'{token_uid} 无权限查看 {class_name} ')
+    teacher_auth = check_user_is_teacher(token_uid, engine)
+    print(checked_class)
+    if not token_uid or (not checked_class and not teacher_auth):
         print(token_uid)
+        return ApiResponse(code=400, msg=f'{token_uid} 无权限查看 {class_name} ')
     response = await get_class_list(class_name, engine)
     return response

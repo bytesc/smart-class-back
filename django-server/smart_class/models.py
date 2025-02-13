@@ -68,6 +68,7 @@ class StuDetail(models.Model):
         db_table = 'stu_detail'
         verbose_name = '学生详情'
         verbose_name_plural = '03-学生详情'
+        unique_together = (('uid', 'stu_num'),)
 
     def __str__(self):
         return str(self.uid) + " - " + str(self.stu_num)
@@ -83,6 +84,7 @@ class TeacherDetail(models.Model):
         db_table = 'teacher_detail'
         verbose_name = '教师详情'
         verbose_name_plural = '04-教师详情'
+        unique_together = (('uid', 'teacher_num'),)
 
     def __str__(self):
         return str(self.uid) + " - " + str(self.teacher_num)
@@ -147,8 +149,8 @@ class StuGrade(models.Model):
     uid = models.ForeignKey(UserInfo, on_delete=models.CASCADE,
                             db_column='uid', verbose_name='用户ID')
     lesson_num = models.ForeignKey(LessonInfo, on_delete=models.CASCADE,
-                                  db_column='lesson_num', verbose_name='课程编号')
-    grade = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='成绩')
+                                   db_column='lesson_num', verbose_name='课程编号')
+    grade = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='成绩', null=True, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE,
                                  db_column='semester', verbose_name='学期')
     notes = models.CharField(max_length=255, null=True, blank=True, verbose_name='备注')
@@ -157,7 +159,7 @@ class StuGrade(models.Model):
         db_table = 'stu_grade'
         verbose_name = '学生成绩'
         verbose_name_plural = '09-学生成绩'
-        unique_together = ('uid', 'lesson_num', 'semester')
+        unique_together = (('uid', 'lesson_num', 'semester'),)
 
     def __str__(self):
         return f"{self.uid} - {self.lesson_num} - {self.semester}"
