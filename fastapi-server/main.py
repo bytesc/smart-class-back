@@ -70,5 +70,19 @@ async def get_my_grade_list(request: Request, class_name: str):
     return response
 
 
+from api.policy import get_policy_list_api
+@app.post("/api/policy-list/")
+async def get_policy_list(request: Request):
+    response = await get_policy_list_api(request, engine)
+    return response
+
+
+from api.policy import get_policy_detail_api
+@app.post("/api/policy/{policy_name}")
+async def get_policy_list(request: Request,policy_name:str):
+    response = await get_policy_detail_api(request,policy_name,engine)
+    return response
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=config_data['server_port'])

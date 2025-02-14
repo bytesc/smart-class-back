@@ -26,7 +26,7 @@ async def get_my_grade_list(uid: str, engine):
         })
         conn.commit()
         stu_grade_list = stu_grade_result.fetchall()
-        print(stu_grade_result)
+        # print(stu_grade_result)
         if stu_grade_list:
             response.data = {
                 "stu_grade_list": [
