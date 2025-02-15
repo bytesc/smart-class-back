@@ -31,7 +31,7 @@ async def class_grade_prediction_api(request: Request, data: ClassGradePredictio
 
     except Exception as e:
         print(e)
-        raise e
+        # raise e
         return ApiResponse(code=500, msg="预测错误")
     finally:
         conn.close()

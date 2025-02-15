@@ -182,7 +182,6 @@ def predict_for_class(class_name: str, lesson_id: str, engine):
     # 预测班级学生的成绩
     user_grades_array = np.array(user_grades_list)
     predicted_grades = predict_new_data(model, user_grades_array)
-    print(predicted_grades, uid_has_grades)
     # 将预测结果与用户ID对应起来
     predicted_grades_dict = {uid_has_grades[i]: predicted_grades[i] for i in range(len(uid_has_grades))}
     return predicted_grades_dict
