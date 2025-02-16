@@ -43,7 +43,7 @@ async def class_grade_prediction_api(request: Request, data: ClassGradePredictio
             stu_info = stu_info_dict.get(uid, {})
             result_list_with_info_list.append({
                 "uid": uid,
-                "predicted_grade": predicted_grade,
+                "predicted_grade": f"{predicted_grade:.2f}",
                 "stu_num": stu_info.get("stu_num"),
                 "username": stu_info.get("username")
             })
@@ -83,11 +83,12 @@ async def check_predictable_lessons_api(request: Request, engine):
         for lesson in lesson_list:
             lesson_id, lesson_name = lesson
             X, y = generate_training_dataset(lesson_id, engine)
-            result_list.append({
-                "lesson_id": lesson_id,
-                "lesson_name": lesson_name,
-                "dataset_length": len(X)
-            })
+            if len(X) >= 3:
+                result_list.append({
+                    "lesson_id": lesson_id,
+                    "lesson_name": lesson_name,
+                    "dataset_length": len(X)
+                })
 
         return ApiResponse(code=200,
                            data={
@@ -100,6 +101,3 @@ async def check_predictable_lessons_api(request: Request, engine):
         return ApiResponse(code=500, msg=f'数据集检查错误')
     finally:
         conn.close()
-
-
-
