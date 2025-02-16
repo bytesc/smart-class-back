@@ -136,7 +136,7 @@ def predict_new_data(model, new_data):
 # 使用generate_training_dataset函数获取特征数据和目标变量
 # 然后使用train_model函数训练和评估模型
 # 最后使用predict_new_data函数预测新数据
-def predict_for_stu(user_id: str, lesson_num: str, engine):
+def predict_for_stu_func(user_id: str, lesson_num: str, engine):
     X, y = generate_training_dataset(lesson_num, engine)
     X = np.array(X)
     y = np.array(y)
@@ -150,7 +150,7 @@ def predict_for_stu(user_id: str, lesson_num: str, engine):
     return predicted_grade[0]
 
 
-def predict_for_class(class_name: str, lesson_num: str, engine):
+def predict_for_class_func(class_name: str, lesson_num: str, engine):
     # 获取班级中所有学生的user_id
     conn = engine.connect()
     try:

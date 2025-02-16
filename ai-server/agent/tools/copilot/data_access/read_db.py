@@ -101,7 +101,7 @@ def execute_select(engine,sql):
     except SQLAlchemyError as e:
         # 如果发生错误，打印错误信息
         print(f"An error occurred: {e}")
-        return e
+        return str(e)
 
 
 def get_table_creation_statements(engine):

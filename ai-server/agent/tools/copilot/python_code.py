@@ -8,7 +8,7 @@ import pandas as pd
 pd.set_option('display.max_columns', None)
 
 
-def get_final_prompt(data, question):
+def get_python_code_prompt(data, question):
     def slice_dfs(df_dict, lines=3):
         top_five_dict = {}
         for key, df in df_dict.items():
@@ -44,7 +44,7 @@ def get_final_prompt(data, question):
 
 
 def get_py_code(data, question, llm, retries=3):
-    final_prompt = get_final_prompt(data, question)
+    final_prompt = get_python_code_prompt(data, question)
     retries_times = 0
     error_msg = ""
     while retries_times <= retries:
