@@ -10,7 +10,7 @@ llm = get_llm()
 
 from .prediction.grade_prediction import predict_for_stu_func,predict_for_class_func
 from .copilot.sql_code import get_sql_code
-from .copilot.data_access.read_db import execute_select
+from .copilot.utils.read_db import execute_select
 
 
 def predict_grade_for_stu(user_id: str, lesson_num: str):
