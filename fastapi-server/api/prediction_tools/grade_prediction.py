@@ -40,34 +40,67 @@ def get_pre_lessons(lesson_num: str, engine):
 
 
 def get_pre_lessons_grades_for_class(lesson_id: str, engine):
+    # pre_lessons = get_pre_lessons(lesson_id, engine)
+    # if not pre_lessons:
+    #     return {}
+    #
+    # conn = engine.connect()
+    # try:
+    #     pre_lessons_str = ','.join([f"'{lesson[0]}'" for lesson in pre_lessons])
+    #     query = f"""
+    #         SELECT sg.uid, GROUP_CONCAT(sg.grade ORDER BY sg.lesson_num) AS grades
+    #         FROM stu_grade sg
+    #         WHERE sg.lesson_num IN ({pre_lessons_str})
+    #         GROUP BY sg.uid
+    #         ORDER BY sg.uid;
+    #     """
+    #     result = conn.execute(sqlalchemy.text(query))
+    #
+    #     grades_dict = {}
+    #     for row in result.fetchall():
+    #         grades_list = [float(grade) for grade in row[1].split(',')]
+    #         if len(grades_list) == len(pre_lessons):
+    #             grades_dict[str(row[0])] = grades_list
+    #     return grades_dict
+    #
+    # except Exception as e:
+    #     print(e)
+    #     raise e
+    # finally:
+    #     conn.close()
     pre_lessons = get_pre_lessons(lesson_id, engine)
     if not pre_lessons:
         return {}
 
-    conn = engine.connect()
-    try:
-        pre_lessons_str = ','.join([f"'{lesson[0]}'" for lesson in pre_lessons])
-        query = f"""
-            SELECT sg.uid, GROUP_CONCAT(sg.grade ORDER BY sg.lesson_num) AS grades
-            FROM stu_grade sg
-            WHERE sg.lesson_num IN ({pre_lessons_str})
-            GROUP BY sg.uid
-            ORDER BY sg.uid;
-        """
-        result = conn.execute(sqlalchemy.text(query))
+    grades_dict = {}
+    for pre_lesson in pre_lessons:
+        conn = engine.connect()
+        try:
+            query = f"""
+                   SELECT sg.uid, sg.grade, sg.lesson_num, sg.semester
+                   FROM stu_grade sg
+                   WHERE sg.lesson_num = '{pre_lesson[0]}'
+                   ORDER BY sg.uid,sg.semester;
+               """
+            result = conn.execute(sqlalchemy.text(query))
 
-        grades_dict = {}
-        for row in result.fetchall():
-            grades_list = [float(grade) for grade in row[1].split(',')]
-            if len(grades_list) == len(pre_lessons):
-                grades_dict[str(row[0])] = grades_list
-        return grades_dict
+            for row in result.fetchall():
+                student_id = str(row[0])
+                grade = float(row[1])
+                if student_id not in grades_dict:
+                    grades_dict[student_id] = [None] * len(pre_lessons)
+                index = pre_lessons.index(pre_lesson)
+                grades_dict[student_id][index] = grade
+        except Exception as e:
+            print(e)
+            raise e
+        finally:
+            conn.close()
 
-    except Exception as e:
-        print(e)
-        raise e
-    finally:
-        conn.close()
+    # 过滤掉那些没有完整成绩记录的学生
+    grades_dict = {k: v for k, v in grades_dict.items() if None not in v}
+
+    return grades_dict
 
 
 def get_grade_for_stu(uid: str, lesson_num: str, engine):
