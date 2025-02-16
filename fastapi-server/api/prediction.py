@@ -24,7 +24,7 @@ async def class_grade_prediction_api(request: Request, data: ClassGradePredictio
                         },
                         msg="预测失败，所有学生都缺乏前置成绩")
 
-        result_list = [{"uid": k, "predicted_grade": v} for k, v in predict_result.items()]
+        # result_list = [{"uid": k, "predicted_grade": v} for k, v in predict_result.items()]
 
         stu_list_result = conn.execute(sqlalchemy.text("""
                             SELECT stu_detail.uid, stu_detail.stu_num, stu_detail.major,

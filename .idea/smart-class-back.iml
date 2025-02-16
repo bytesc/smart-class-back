@@ -9,6 +9,7 @@
     <option name="namespacePackageFolders">
       <list>
         <option value="$MODULE_DIR$/fastapi-server" />
+        <option value="$MODULE_DIR$/ai-server" />
       </list>
     </option>
   </component>

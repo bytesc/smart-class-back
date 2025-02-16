@@ -40,34 +40,6 @@ def get_pre_lessons(lesson_num: str, engine):
 
 
 def get_pre_lessons_grades(lesson_id: str, engine):
-    # pre_lessons = get_pre_lessons(lesson_id, engine)
-    # if not pre_lessons:
-    #     return {}
-    #
-    # conn = engine.connect()
-    # try:
-    #     pre_lessons_str = ','.join([f"'{lesson[0]}'" for lesson in pre_lessons])
-    #     query = f"""
-    #         SELECT sg.uid, GROUP_CONCAT(sg.grade ORDER BY sg.lesson_num) AS grades
-    #         FROM stu_grade sg
-    #         WHERE sg.lesson_num IN ({pre_lessons_str})
-    #         GROUP BY sg.uid
-    #         ORDER BY sg.uid;
-    #     """
-    #     result = conn.execute(sqlalchemy.text(query))
-    #
-    #     grades_dict = {}
-    #     for row in result.fetchall():
-    #         grades_list = [float(grade) for grade in row[1].split(',')]
-    #         if len(grades_list) == len(pre_lessons):
-    #             grades_dict[str(row[0])] = grades_list
-    #     return grades_dict
-    #
-    # except Exception as e:
-    #     print(e)
-    #     raise e
-    # finally:
-    #     conn.close()
     pre_lessons = get_pre_lessons(lesson_id, engine)
     if not pre_lessons:
         return {}
@@ -219,4 +191,28 @@ def predict_for_class(class_name: str, lesson_num: str, engine):
     predicted_grades = predict_new_data(model, user_grades_array)
     # 将预测结果与用户ID对应起来
     predicted_grades_dict = {uid_has_grades[i]: predicted_grades[i] for i in range(len(uid_has_grades))}
-    return predicted_grades_dict
+
+    # return predicted_grades_dict
+    conn = engine.connect()
+    stu_list_result = conn.execute(sqlalchemy.text("""
+                        SELECT stu_detail.uid, stu_detail.stu_num, stu_detail.major,
+                         stu_detail.stu_position, user_info.username
+                        FROM stu_detail, user_info
+                        WHERE stu_detail.class_name = :class_name and stu_detail.uid = user_info.uid
+                    """), {
+        "class_name": class_name
+    })
+    conn.commit()
+    stu_list = stu_list_result.fetchall()
+    stu_info_dict = {stu[0]: {"stu_num": stu[1], "username": stu[4]} for stu in stu_list}
+
+    result_list_with_info_list = []
+    for uid, predicted_grade in predicted_grades_dict.items():
+        stu_info = stu_info_dict.get(uid, {})
+        result_list_with_info_list.append({
+            "uid": uid,
+            "predicted_grade": predicted_grade,
+            "stu_num": stu_info.get("stu_num"),
+            "username": stu_info.get("username")
+        })
+    return result_list_with_info_list
