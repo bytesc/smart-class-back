@@ -1,5 +1,5 @@
 from data_access.read_db import get_table_creation_statements, get_rows_from_all_tables, get_table_and_column_comments
-from llm_access.call_llm_test import call_llm
+from .utils.call_llm_test import call_llm
 from .utils.parse_output import parse_sql_code
 
 

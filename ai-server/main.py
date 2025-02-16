@@ -1,7 +1,11 @@
 import sqlalchemy
 import uvicorn
 from fastapi import FastAPI
+<<<<<<< HEAD
 from .agent.tools.utils.get_config import config_data
+=======
+from utils.get_config import config_data
+>>>>>>> gitee/master
 
 
 DATABASE_URL = config_data['mysql']

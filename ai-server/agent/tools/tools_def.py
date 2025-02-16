@@ -1,9 +1,12 @@
 import sqlalchemy
 
 from .utils.get_config import config_data
+from .utils.llm_access.LLM import get_llm
 
 DATABASE_URL = config_data['mysql']
 engine = sqlalchemy.create_engine(DATABASE_URL)
+
+llm = get_llm()
 
 from .prediction.grade_prediction import predict_for_stu,predict_for_class
 

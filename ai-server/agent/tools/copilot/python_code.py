@@ -1,4 +1,4 @@
-from llm_access import call_llm_test
+from .utils import call_llm_test
 
 from .utils.parse_output import parse_generated_code
 
