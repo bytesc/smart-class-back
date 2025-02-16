@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 
-def get_pre_lessons(lesson_id: str, engine):
+def get_pre_lessons(lesson_num: str, engine):
     conn = engine.connect()
     try:
         result = conn.execute(sqlalchemy.text("""
@@ -13,7 +13,7 @@ def get_pre_lessons(lesson_id: str, engine):
                       -- 非递归成员（初始查询）
                       SELECT to_lesson
                       FROM lesson_prerequisite
-                      WHERE from_lesson = :lesson_id
+                      WHERE from_lesson = :lesson_num
                       UNION ALL
                       -- 递归成员
                       SELECT lp.to_lesson
@@ -23,7 +23,7 @@ def get_pre_lessons(lesson_id: str, engine):
                     -- 最终查询，选择递归CTE的结果
                     SELECT DISTINCT * FROM SubsequentLessons ORDER BY to_lesson;
                                         """),
-                              {"lesson_id": lesson_id})
+                              {"lesson_num": lesson_num})
 
         conn.commit()
         pre_lesson_list = result.fetchall()
@@ -39,10 +39,10 @@ def get_pre_lessons(lesson_id: str, engine):
         conn.close()
 
 
-def get_grades_for_pre_lessons(lesson_id: str, engine):
+def get_pre_lessons_grades_for_class(lesson_id: str, engine):
     pre_lessons = get_pre_lessons(lesson_id, engine)
     if not pre_lessons:
-        return []
+        return {}
 
     conn = engine.connect()
     try:
@@ -58,7 +58,9 @@ def get_grades_for_pre_lessons(lesson_id: str, engine):
 
         grades_dict = {}
         for row in result.fetchall():
-            grades_dict[str(row[0])] = [float(grade) for grade in row[1].split(',')]
+            grades_list = [float(grade) for grade in row[1].split(',')]
+            if len(grades_list) == len(pre_lessons):
+                grades_dict[str(row[0])] = grades_list
         return grades_dict
 
     except Exception as e:
@@ -68,17 +70,17 @@ def get_grades_for_pre_lessons(lesson_id: str, engine):
         conn.close()
 
 
-def get_grade(uid: str, lesson_id: str, engine):
+def get_grade_for_stu(uid: str, lesson_num: str, engine):
     conn = engine.connect()
     try:
         query = sqlalchemy.text("""
             SELECT grade
             FROM stu_grade
-            WHERE uid = :uid AND lesson_num = :lesson_id
+            WHERE uid = :uid AND lesson_num = :lesson_num
             ORDER BY id DESC
             LIMIT 1;
         """)
-        result = conn.execute(query, {"uid": uid, "lesson_id": lesson_id})
+        result = conn.execute(query, {"uid": uid, "lesson_num": lesson_num})
 
         row = result.fetchone()
         if row:
@@ -93,11 +95,11 @@ def get_grade(uid: str, lesson_id: str, engine):
         conn.close()
 
 
-def generate_training_dataset(lesson_id: str, engine):
-    pre_lesson_grades = get_grades_for_pre_lessons(lesson_id, engine)
+def generate_training_dataset(lesson_num: str, engine):
+    pre_lesson_grades = get_pre_lessons_grades_for_class(lesson_num, engine)
     current_lesson_grades = {}
     for uid in pre_lesson_grades.keys():
-        grade = get_grade(uid, lesson_id, engine)
+        grade = get_grade_for_stu(uid, lesson_num, engine)
         if grade is not None:
             current_lesson_grades[uid] = grade
 
@@ -111,7 +113,7 @@ def generate_training_dataset(lesson_id: str, engine):
     return x, y
 
 
-def train_and_evaluate_model(X, y, test_size=0.2, random_state=None, alpha=1.0, kernel='rbf', gamma=0.1):
+def train_model(X, y, test_size=0.2, random_state=None, alpha=1.0, kernel='rbf', gamma=0.1):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
     kr = KernelRidge(alpha=alpha, kernel=kernel, gamma=gamma)  # 创建核岭回归模型
     kr.fit(X_train, y_train)  # 训练模型
@@ -127,23 +129,23 @@ def predict_new_data(model, new_data):
 
 
 # 使用generate_training_dataset函数获取特征数据和目标变量
-# 然后使用train_and_evaluate_model函数训练和评估模型
+# 然后使用train_model函数训练和评估模型
 # 最后使用predict_new_data函数预测新数据
-def predict_for_stu(user_id: str, lesson_id: str, engine):
-    X, y = generate_training_dataset(lesson_id, engine)
+def predict_for_stu(user_id: str, lesson_num: str, engine):
+    X, y = generate_training_dataset(lesson_num, engine)
     X = np.array(X)
     y = np.array(y)
-    model = train_and_evaluate_model(X, y)
-    pre_lesson_grades = get_grades_for_pre_lessons(lesson_id, engine)
+    model = train_model(X, y)
+    pre_lesson_grades = get_pre_lessons_grades_for_class(lesson_num, engine)
     if user_id not in pre_lesson_grades:
-        print(f"No grades found for user {user_id} in pre-lessons of {lesson_id}")
+        print(f"No grades found for user {user_id} in pre-lessons of {lesson_num}")
         return None
     user_grades = np.array([pre_lesson_grades[user_id]])
     predicted_grade = predict_new_data(model, user_grades)
     return predicted_grade[0]
 
 
-def predict_for_class(class_name: str, lesson_id: str, engine):
+def predict_for_class(class_name: str, lesson_num: str, engine):
     # 获取班级中所有学生的user_id
     conn = engine.connect()
     try:
@@ -161,13 +163,13 @@ def predict_for_class(class_name: str, lesson_id: str, engine):
         conn.close()
 
     # 获取特征数据和目标变量
-    X, y = generate_training_dataset(lesson_id, engine)
+    X, y = generate_training_dataset(lesson_num, engine)
     X = np.array(X)
     y = np.array(y)
     # 训练和评估模型
-    model = train_and_evaluate_model(X, y)
+    model = train_model(X, y)
     # 获取班级学生的前置课程成绩
-    pre_lesson_grades = get_grades_for_pre_lessons(lesson_id, engine)
+    pre_lesson_grades = get_pre_lessons_grades_for_class(lesson_num, engine)
     user_grades_list = []
     uid_has_grades = []
     # 准备预测数据
@@ -175,10 +177,10 @@ def predict_for_class(class_name: str, lesson_id: str, engine):
         if user_id in pre_lesson_grades:
             user_grades_list.append(pre_lesson_grades[user_id])
             uid_has_grades.append(user_id)
-    # 如果没有学生有前置课程成绩，则返回空列表
+    # 如果没有学生有前置课程成绩，则返回空
     if len(user_grades_list) == 0:
-        print(f"No grades found for any student in class {class_name} for pre-lessons of {lesson_id}")
-        return []
+        print(f"No grades found for any student in class {class_name} for pre-lessons of {lesson_num}")
+        return None
     # 预测班级学生的成绩
     user_grades_array = np.array(user_grades_list)
     predicted_grades = predict_new_data(model, user_grades_array)

@@ -104,9 +104,19 @@ async def get_policy_list(request: Request, policy_name: str):
 
 from api.prediction import class_grade_prediction_api, ClassGradePredictionModel
 
+
 @app.post("/api/class-grade-prediction/")
 async def class_grade_prediction(request: Request, data: ClassGradePredictionModel):
     response = await class_grade_prediction_api(request, data,engine)
+    return response
+
+
+from api.prediction import check_predictable_lessons_api
+
+
+@app.post("/api/check-predictable-lessons/")
+async def check_predictable_lessons(request: Request):
+    response = await check_predictable_lessons_api(request, engine)
     return response
 
 
